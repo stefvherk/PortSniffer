@@ -1,6 +1,7 @@
 import socket
 import threading
 from queue import Queue
+import re
 
 # List of common and lesser-known ports to scan with their definitions
 PORTS_TO_SCAN = {
@@ -36,6 +37,15 @@ PORTS_TO_SCAN = {
     9200: "Elasticsearch",
     10000: "Webmin"
 }
+
+def is_valid_ip(ip):
+    # Validate IPv4 address format
+    pattern = re.compile(r"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$")
+    if not pattern.match(ip):
+        return False
+    # Ensure each octet is in the range 0-255
+    octets = ip.split('.')
+    return all(0 <= int(octet) <= 255 for octet in octets)
 
 def scan_port(ip, port, open_ports):
     try:
@@ -76,8 +86,7 @@ def scan_ports(ip, num_threads=100):
 
 if __name__ == "__main__":
     ip = input("Enter the IP address to scan: ")
-    try:
-        socket.inet_aton(ip)
+    if is_valid_ip(ip):
         print(f"Scanning {ip} for open ports...")
         open_ports = scan_ports(ip, num_threads=100)
         if open_ports:
@@ -86,5 +95,5 @@ if __name__ == "__main__":
                 print(f"Port {port}: {PORTS_TO_SCAN.get(port, 'Unknown Service')}")
         else:
             print("\nNo open ports found.")
-    except socket.error:
-        print("Invalid IP address.")
+    else:
+        print("Invalid IP address. Please enter a valid IPv4 address.")
