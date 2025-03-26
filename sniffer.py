@@ -85,15 +85,19 @@ def scan_ports(ip, num_threads=100):
     return open_ports
 
 if __name__ == "__main__":
-    ip = input("Enter the IP address to scan: ")
-    if is_valid_ip(ip):
-        print(f"Scanning {ip} for open ports...")
-        open_ports = scan_ports(ip, num_threads=100)
-        if open_ports:
-            print("\nOpen ports:")
-            for port in open_ports:
-                print(f"Port {port}: {PORTS_TO_SCAN.get(port, 'Unknown Service')}")
+    while True:
+        ip = input("Enter the IP address to scan (or type 'exit' to quit): ")
+        if ip.lower() == 'exit':
+            print("Exiting the program.")
+            break
+        if is_valid_ip(ip):
+            print(f"Scanning {ip} for open ports...")
+            open_ports = scan_ports(ip, num_threads=100)
+            if open_ports:
+                print("\nOpen ports:")
+                for port in open_ports:
+                    print(f"Port {port}: {PORTS_TO_SCAN.get(port, 'Unknown Service')}")
+            else:
+                print("\nNo open ports found.")
         else:
-            print("\nNo open ports found.")
-    else:
-        print("Invalid IP address. Please enter a valid IPv4 address.")
+            print("Invalid IP address. Please enter a valid IPv4 address.")
